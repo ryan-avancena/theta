@@ -1,12 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 
 peak_hours_2022 = pd.read_excel('./data/2022/2022-peak-hours-ca.xlsx',sheet_name='2022 Peak Hour Report')
 traffic_volumes_2022 = pd.read_excel('./data/2022/2022-traffic-volumes-ca-v2.xlsx', sheet_name='2022 AADT DATA')
 
-""" PEAK HOURS
+""" DATASETS
 
+peak_hours_2022 - (1340, 26)
 - Dir = Direction of traffic flow
 - AADT = Average Annual Daily Traffic
 - AM Peak = Morning peak hour
@@ -26,5 +28,28 @@ traffic_volumes_2022 = pd.read_excel('./data/2022/2022-traffic-volumes-ca-v2.xls
 - RTE = State highway route number
 - YR = Year of when the count was made, this is on a 3-year cycle
 
+traffic_volumes_2022 - (7116, 14)
+- FRONT = traffic going NORTH or EAST
+- BACK = traffic going SOUTH or WEST
 """
+
+if __name__ == '__main__':
+    # print(peak_hours_2022.columns)
+    # print(traffic_volumes_2022.columns)
+    # print(peak_hours_2022['CO'].unique())
+    # print(traffic_volumes_2022['COUNTY'].unique())
+    
+
+    # focusing on Los Angeles right now
+    los_angeles = peak_hours_2022[peak_hours_2022['CO'] == 'LA'].drop(columns=['RTE_SFX','PM_PFX','PM_SFX'])
+    orange = peak_hours_2022[peak_hours_2022['CO'] == 'ORA'].drop(columns=['RTE_SFX','PM_PFX','PM_SFX'])
+
+    la_numeric_cols = los_angeles.select_dtypes(include=[np.number]).columns
+    
+    # correlation matrix
+    corr_matrix = los_angeles[la_numeric_cols].corr()
+    plt.figure(figsize=(12, 12))
+    sns.heatmap(corr_matrix, annot=True, fmt=".2f", cmap="coolwarm", linewidths=0.5)
+    plt.title("Correlation Matrix - Los Angeles")
+    plt.show()
 
